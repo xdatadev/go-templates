@@ -36,30 +36,37 @@ steps:
   # Criação dos arquivos a partir dos templates
   - type: create
     file: go.mod
+    no-clobber: false
     template: templates/go.mod.tpl
 
   - type: create
     file: cmd/main.go
+    no-clobber: false
     template: templates/main.go.tpl
 
   - type: create
     file: internal/config/config.go
+    no-clobber: false
     template: templates/config.go.tpl
 
   - type: create
     file: internal/config/model.go
+    no-clobber: false
     template: templates/configmodel.go.tpl
 
   - type: create
     file: internal/handlers/handler.go
+    no-clobber: false
     template: templates/handler.go.tpl
 
   - type: create
     file: internal/models/model.go
+    no-clobber: false
     template: templates/model.go.tpl
 
   - type: create
     file: internal/web/web.go
+    no-clobber: false
     template: templates/web.go.tpl
 
   - type: create
