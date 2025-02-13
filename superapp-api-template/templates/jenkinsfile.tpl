@@ -1,0 +1,72 @@
+pipeline {
+
+    agent any
+
+    environment {
+        docker_file = "{{.Endpoint}}/Dockerfile"
+        image_name = "{{.ProjectName}}"
+        deployment_file = "infra/kubernetes/superapp-assistant/Deploy_SuperApp_Assistant.yaml"
+        tag_version = "${env.BUILD_ID}"
+        docker_image = "$ECR_LOGIN/$image_name:$tag_version"
+        gittoken = "$GIT_TOKEN"
+        role_name = "assistant_service_role"
+    }
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+               sh 'chmod 777 -R /var/jenkins_home/workspace'
+               sh 'rm -rf *'
+               sh 'git clone git@github.com:SamMobilidade/superapp-assistant.git assistant'
+               dir('assistant') {
+                   sh "git checkout $BRANCH_NAME"
+               }
+               sh 'git clone git@github.com:sammobdev/SuperApp_Infrastructure.git infra'
+               dir('infra') {
+                   sh "git checkout $BRANCH_NAME"
+               }
+               sh 'chmod 777 -R /var/jenkins_home/workspace'
+            }
+        }
+        
+        stage('Build Image') {
+            steps {
+                script {
+                    sh 'sed -i "s/{{environment}}/$ENVIRONMENT/g" "$docker_file"'
+                    sh "cat $docker_file"
+                    sh "docker buildx build --build-arg GIT_TOKEN=$gittoken -t $image_name -f $docker_file ."
+                }
+            }
+        }
+        
+        stage('Push Image To Registry') {
+            steps {
+               sh "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_LOGIN"
+               sh "docker tag $image_name $ECR_LOGIN/$image_name:$tag_version"
+               sh "docker push $ECR_LOGIN/$image_name:$tag_version"
+               sh "docker system prune -a -f"
+            }
+        }
+        
+        stage('Deploy Kubernetes') {
+            steps {
+               sh "aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME"
+               script {
+                def roleArn = sh(
+                        script: "aws iam get-role --role-name $role_name  --query Role.Arn --output text --region $AWS_REGION --no-cli-pager",
+                        returnStdout: true
+                    ).trim()
+                    echo "Role Arn: $roleArn"
+                    sh """ 
+                        sed -i "s;{{SERVICE_ROLE_ARN}};${roleArn};g" $deployment_file
+                    """
+               }
+               sh 'sed -i "s/{{replicas}}/$REPLICAS/g" $deployment_file'
+               sh 'sed -i "s;{{docker_image}};$docker_image;g" $deployment_file'
+               sh 'cat $deployment_file'
+               sh 'kubectl apply -f $deployment_file'
+            }
+        }
+        
+    }
+}
