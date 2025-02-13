@@ -32,7 +32,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    sh 'sed -i "s/{{environment}}/$ENVIRONMENT/g" "$docker_file"'
+                    sh 'sed -i "s/{{wraptmpl "{{environment}}" }}"/$ENVIRONMENT/g" "$docker_file"'
                     sh "cat $docker_file"
                     sh "docker buildx build --build-arg GIT_TOKEN=$gittoken -t $image_name -f $docker_file ."
                 }
