@@ -71,11 +71,8 @@ steps:
 
   - type: create
     file: Dockerfile
+    no-clobber: false
     template: templates/dockerfile.tpl
-
-  - type: create
-    file: JenkinsFile
-    template: templates/jenkinsfile.tpl
 
   - type: create
     file: terraform/main.tf
