@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"reflect"
 	"time"
+
+	"github.com/xdatadev/{{ .Project }}/internal/handlers"
 )
 
 type Server struct {
@@ -22,7 +24,7 @@ func NewServer(addr string, handlers *handlers.AppHandlers) *Server {
 	r.Use(traceIDMiddleware())
 	r.Use(gin.Recovery())
 
-	rootGroup := r.Group("/{{.Endpoint}}")
+	rootGroup := r.Group("/{{.Scaffold.Resource}}")
 	{
 		rootGroup.GET("/health", s.handlers.HealthCheck)
 		v1 := rootGroup.Group("/v1")

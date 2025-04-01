@@ -12,11 +12,11 @@ ARG GIT_TOKEN
 WORKDIR /app
 
 # Copiando os arquivos de dependência primeiro
-COPY {{.Endpoint}}/go.mod {{.Endpoint}}/go.sum ./
+COPY {{.Scaffold.Resource}}/go.mod {{.Scaffold.Resource}}/go.sum ./
 
 ENV GOPRIVATE=github.com/{{.GitHubUser}}/*
 ENV GONOPROXY=github.com/{{.GitHubUser}}
-RUN git config --global url."https://${GIT_TOKEN}:x-oauth-basic@github.com/{{.GitHubUser}}".insteadOf "https://github.com/{{.GitHubUser}}"
+RUN git config --global url."https://${GIT_TOKEN}:x-oauth-basic@github.com/{{.Scaffold.GitHubUser}}".insteadOf "https://github.com/{{.Scaffold.GitHubUser}}"
 
 RUN --mount=type=ssh \
     go mod download
@@ -24,11 +24,11 @@ RUN --mount=type=ssh \
 
 COPY assistant/. .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o {{.Endpoint}} 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-w -s" -o {{.Endpoint}} .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o {{.Scaffold.Resource}} 
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -ldflags="-w -s" -o {{.Scaffold.Resource}} .
 
 FROM alpine:3.19
-COPY --from=builder /app/{{.Endpoint}} /app/{{.Endpoint}}
+COPY --from=builder /app/{{.Scaffold.Resource}} /app/{{.Scaffold.Resource}}
 
 
 ENV TZ=America/Sao_Paulo
@@ -44,7 +44,7 @@ RUN addgroup -S app && adduser -S app -G app
 WORKDIR /app
 
 # Copia o binário do builder
-COPY --from=builder /app/{{.Endpoint}} .
+COPY --from=builder /app/{{.Scaffold.Resource}} .
 
 # Muda a propriedade dos arquivos
 RUN chown -R app:app /app
@@ -60,5 +60,5 @@ EXPOSE 8080
 # Comando para executar a aplicação
 #CMD [ "sh", "-c", "ssh -4 -i jumpbox_kp_dev.pem -o StrictHostKeyChecking=no -f -N -L 5434:superappdb.cktkjggmdpez.us-east-1.rds.amazonaws.com:5432 ubuntu@54.160.32.218"]
 
-ENTRYPOINT [ "/app/{{.Endpoint}}" ]
+ENTRYPOINT [ "/app/{{.Scaffold.Resource}}" ]
 

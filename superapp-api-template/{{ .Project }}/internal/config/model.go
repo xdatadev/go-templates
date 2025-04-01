@@ -1,8 +1,10 @@
 package config
 
+import "time"
+
 type Config struct {
-	DB           DBConfig           `param:"database"`
-	Service      any                `param:"service"`
+	DB      DBConfig `param:"database"`
+	Service any      `param:"service"`
 }
 
 type DBConfig struct {

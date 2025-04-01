@@ -47,7 +47,7 @@ func loadParameters() {
 		panic(err)
 	}
 
-	err = ps.LoadSettings(context.Background(), "{{.ParametersRoot}}", &config)
+	err = ps.LoadSettings(context.Background(), "{{.Scaffold.ParametersRoot}}", &config)
 	if err != nil {
 		panic(err)
 	}

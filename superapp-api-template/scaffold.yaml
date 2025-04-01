@@ -1,83 +1,97 @@
 name: SuperApp API Scaffold
 description: Template para criar uma API em Go utilizando o framework Gin.
-variables:
-  ProjectName:
-    description: "Nome do projeto (também utilizado como nome do módulo)"
-    prompt: "Digite o nome do projeto (ex: superapp-api)"
-    default: superapp-api
-  GitHubUser:
-    description: "Usuário do GitHub"
-    prompt: "Digite o proprietario do repositorio no GitHub"
-    default: xdatadev
-  ParametersRoot:
-      description: "Caminho raiz dos parâmetros no Parameter Store"
-      prompt: "Digite o caminho raiz dos parâmetros no Parameter Store (ex: /superapp/assistant)"
-  Endpoint:
-    description: "Resource Name"
-    prompt: "Digite o o nome do principal resource (ex: /assistant)"
+messages: 
+  pre: |
+  # SuperApp API Scaffold
 
-steps:
-  # Criação da estrutura de diretórios
-  - type: directory
-    directory: cmd
-  - type: directory
-    directory: internal/config
-  - type: directory
-    directory: internal/handlers
-  - type: directory
-    directory: internal/models
-  - type: directory
-    directory: internal/web
-  - type: directory
-    directory: internal/services
-  - type: directory
-    directory: terraform
 
-  # Criação dos arquivos a partir dos templates
-  - type: create
-    file: go.mod
-    no-clobber: false
-    template: templates/go.mod.tpl
+  post: | 
+  # Projeto gerado com sucesso.
 
-  - type: create
-    file: cmd/main.go
-    no-clobber: false
-    template: templates/main.go.tpl
+questions:
+  - name: "GitHubUser"
+    prompt:
+      message: "Digite o proprietario do repositorio no GitHub"
+    required: true
+    default: "xdatadev"
 
-  - type: create
-    file: internal/config/config.go
-    no-clobber: false
-    template: templates/config.go.tpl
+  - name: "ParametersRoot"
+    prompt:
+      message: "Digite o caminho raiz dos parâmetros no Parameter Store"
+    required: true
+    
+  - name: "Resource"
+    prompt:
+      message: "Digite o o nome do principal resource (ex: assistant)"
+    required: true
+  
+presets:
+  default:
+    githubuser: "xdatadev"
 
-  - type: create
-    file: internal/config/model.go
-    no-clobber: false
-    template: templates/configmodel.go.tpl
 
-  - type: create
-    file: internal/handlers/handler.go
-    no-clobber: false
-    template: templates/handler.go.tpl
+# steps:
+#   # Criação da estrutura de diretórios
+#   - type: directory
+#     directory: cmd
+#   - type: directory
+#     directory: internal/config
+#   - type: directory
+#     directory: internal/handlers
+#   - type: directory
+#     directory: internal/models
+#   - type: directory
+#     directory: internal/web
+#   - type: directory
+#     directory: internal/services
+#   - type: directory
+#     directory: terraform
 
-  - type: create
-    file: internal/models/model.go
-    no-clobber: false
-    template: templates/model.go.tpl
+  # # Criação dos arquivos a partir dos templates
+  # - type: create
+  #   file: go.mod
+  #   no-clobber: false
+  #   template: templates/go.mod.tpl
 
-  - type: create
-    file: internal/web/web.go
-    no-clobber: false
-    template: templates/web.go.tpl
+  # - type: create
+  #   file: cmd/main.go
+  #   no-clobber: false
+  #   template: templates/main.go.tpl
 
-  - type: create
-    file: Dockerfile
-    no-clobber: false
-    template: templates/dockerfile.tpl
+  # - type: create
+  #   file: internal/config/config.go
+  #   no-clobber: false
+  #   template: templates/config.go.tpl
 
-  - type: create
-    file: terraform/main.tf
-    template: templates/main.tf.tpl
+  # - type: create
+  #   file: internal/config/model.go
+  #   no-clobber: false
+  #   template: templates/configmodel.go.tpl
 
-  # Executa o comando para baixar as dependências
-  - type: command
-    command: go mod download
+  # - type: create
+  #   file: internal/handlers/handler.go
+  #   no-clobber: false
+  #   template: templates/handler.go.tpl
+
+  # - type: create
+  #   file: internal/models/model.go
+  #   no-clobber: false
+  #   template: templates/model.go.tpl
+
+  # - type: create
+  #   file: internal/web/web.go
+  #   no-clobber: false
+  #   template: templates/web.go.tpl
+
+  # - type: create
+  #   file: Dockerfile
+  #   no-clobber: false
+  #   template: templates/dockerfile.tpl
+
+  # - type: create
+  #   file: terraform/main.tf
+  #   template: templates/main.tf.tpl
+
+  # # Executa o comando para baixar as dependências
+  # - type: command
+  #   command: go mod download

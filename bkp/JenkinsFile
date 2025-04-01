@@ -3,8 +3,8 @@ pipeline {
     agent any
 
     environment {
-        docker_file = "{{.Endpoint}}/Dockerfile"
-        image_name = "{{.ProjectName}}"
+        docker_file = "{{.Scaffold.Resource}}/Dockerfile"
+        image_name = "{{.Project}}"
         deployment_file = "infra/kubernetes/superapp-assistant/Deploy_SuperApp_Assistant.yaml"
         tag_version = "${env.BUILD_ID}"
         docker_image = "$ECR_LOGIN/$image_name:$tag_version"

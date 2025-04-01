@@ -1,16 +1,12 @@
 package handlers
 
 import (
-	"context"
-	"encoding/base64"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/xdatadev/superapp-assistant/internal/config"
-	"github.com/xdatadev/superapp-assistant/internal/models"
 	"github.com/xdatadev/superapp-packages/superapp-common/logger"
+	"github.com/xdatadev/{{ .Project }}/internal/config"
+	"github.com/xdatadev/{{ .Project }}/internal/models"
 )
 
 type AppHandler struct {
@@ -31,7 +27,6 @@ func (h *AppHandler) HealthCheck(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  "healthy",
-		"message": "{{.ProjectName}} is running",
+		"message": "{{ .Project }} is running",
 	})
 }
-

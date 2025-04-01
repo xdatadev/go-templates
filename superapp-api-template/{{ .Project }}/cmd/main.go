@@ -10,7 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/xdatadev/superapp-assistant/internal/config"
+	"github.com/xdatadev/{{ .Project }}/internal/config"
+	"github.com/xdatadev/{{ .Project }}/internal/handlers"
+	"github.com/xdatadev/{{ .Project }}/internal/models"
+	"github.com/xdatadev/{{ .Project }}/internal/web"
 
 	"github.com/xdatadev/superapp-packages/superapp-common/logger"
 	samDB "github.com/xdatadev/superapp-packages/superappdb/database/postgres"
@@ -47,7 +50,7 @@ func main() {
 	hostname, _ := os.Hostname()
 
 	log = logger.New(logger.Config{
-		ServiceName: "{{ .ProjectName }}",
+		ServiceName: "{{ .ProjectKebab }}",
 		MinLevel:    logger.LevelDebug,
 		TraceIDFunc: traceIDFunc,
 		Events:      events,
@@ -55,8 +58,8 @@ func main() {
 			UseStdout:     true,
 			UseCloudWatch: false,
 			CloudWatch: logger.CloudWatchConfig{
-				LogGroup:    "{{ .ProjectName }}",
-				LogStream:   fmt.Sprintf("{{ .ProjectName }}-%s", hostname),
+				LogGroup:    "{{ .Project }}",
+				LogStream:   fmt.Sprintf("{{ .Project }}-%s", hostname),
 				Region:      "us-east-1",
 				Loglevel:    slog.LevelInfo,
 				Credentials: nil, // Use Service Account Role
@@ -130,7 +133,7 @@ func run(ctx context.Context, log *logger.Logger) error {
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Erro durante o shutdown: %v", err)
+		log.Error(context.Background(), fmt.Sprintf("Erro durante o shutdown: %v", err))
 	}
 
 	defer log.Info(ctx, "shutdown", "status", "shutdown complete", "signal", sig)
